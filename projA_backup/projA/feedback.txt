@@ -1,0 +1,191 @@
+============================================
+vis/result.rtx
+16:01:20_Friday_27_March_2015
+============================================
+Feedback:
+  Your program ("Nimsys.java") has been submitted successfully.
+  Compiling your program with "javac"...
+  Your program has been compiled successfully :-)
+Now, it's your responsibility to test your program for correctness!
+Here is a simple test case, and the results:
+============================================
+Test for input file: in1
+Expected results:                                                       Your results:
+Welcome to Nim								Welcome to Nim
+
+Please enter Player 1's name:						Please enter Player 1's name:
+
+Please enter Player 2's name:						Please enter Player 2's name:
+
+Please enter upper bound of stone removal:				Please enter upper bound of stone removal:
+
+Please enter initial number of stones:					Please enter initial number of stones:
+
+12 stones left: * * * * * * * * * * * *					12 stones left: * * * * * * * * * * * *
+Luke's turn - remove how many?						Luke's turn - remove how many?
+
+9 stones left: * * * * * * * * *					9 stones left: * * * * * * * * *
+Han's turn - remove how many?						Han's turn - remove how many?
+
+8 stones left: * * * * * * * *						8 stones left: * * * * * * * *
+Luke's turn - remove how many?						Luke's turn - remove how many?
+
+7 stones left: * * * * * * *						7 stones left: * * * * * * *
+Han's turn - remove how many?						Han's turn - remove how many?
+
+5 stones left: * * * * *						5 stones left: * * * * *
+Luke's turn - remove how many?						Luke's turn - remove how many?
+
+2 stones left: * *							2 stones left: * *
+Han's turn - remove how many?						Han's turn - remove how many?
+
+1 stones left: *							1 stones left: *
+Luke's turn - remove how many?						Luke's turn - remove how many?
+
+Game Over								Game Over
+Han wins!								Han wins!
+Your results seem to be CORRECT :-).
+============================================
+Test for input file: in2
+Expected results:                                                       Your results:
+Welcome to Nim								Welcome to Nim
+
+Please enter Player 1's name:						Please enter Player 1's name:
+
+Please enter Player 2's name:						Please enter Player 2's name:
+
+Please enter upper bound of stone removal:				Please enter upper bound of stone removal:
+
+Please enter initial number of stones:					Please enter initial number of stones:
+
+15 stones left: * * * * * * * * * * * * * * *				15 stones left: * * * * * * * * * * * * * * *
+R2D2's turn - remove how many?						R2D2's turn - remove how many?
+
+14 stones left: * * * * * * * * * * * * * *				14 stones left: * * * * * * * * * * * * * *
+C3PO's turn - remove how many?						C3PO's turn - remove how many?
+
+12 stones left: * * * * * * * * * * * *					12 stones left: * * * * * * * * * * * *
+R2D2's turn - remove how many?						R2D2's turn - remove how many?
+
+9 stones left: * * * * * * * * *					9 stones left: * * * * * * * * *
+C3PO's turn - remove how many?						C3PO's turn - remove how many?
+
+5 stones left: * * * * *						5 stones left: * * * * *
+R2D2's turn - remove how many?						R2D2's turn - remove how many?
+
+Game Over								Game Over
+C3PO wins!								C3PO wins!
+Your results seem to be CORRECT :-).
+============================================
+src/NimPlayer.java
+16:01:18_Friday_27_March_2015
+============================================
+// James Kahn
+// 391990
+
+import java.util.*;
+
+public class NimPlayer
+{
+  private String name;
+
+  // NimPlayer constructor
+  public NimPlayer(String startName)
+  {
+    name = startName;
+  }
+
+  // Return number of stones player wants to remove
+  public int removeStone(Scanner numRev)
+  {
+    // Fetch how many stones player wants to remove
+    System.out.println(name+"'s turn - remove how many?");
+    return numRev.nextInt();
+  }
+
+  public void win()
+  {
+    System.out.println(name + " wins!");
+    return;
+  }
+}
+============================================
+src/Nimsys.java
+16:01:18_Friday_27_March_2015
+============================================
+// James Kahn
+// 391990
+
+import java.util.*;
+
+public class Nimsys
+{
+  static public void main(String[] args)
+  {
+    int upperBound = 0;
+    int numStones = 0;
+    String stoneSym = " *";
+    boolean player1Turn = true;
+    Scanner kb = new Scanner(System.in); 
+
+    // Print welcome message
+    System.out.println("Welcome to Nim");
+
+    // Create player 1
+    System.out.println();
+    System.out.println("Please enter Player 1's name:");
+    NimPlayer player1 = new NimPlayer(kb.next());
+
+    // Create player 2
+    System.out.println();
+    System.out.println("Please enter Player 2's name:");
+    NimPlayer player2 = new NimPlayer(kb.next());
+
+    // Get upper bound of stone removal
+    System.out.println();
+    System.out.println("Please enter upper bound of stone removal:");
+    upperBound = kb.nextInt();
+
+    // Get upper bound of stone removal
+    System.out.println();
+    System.out.println("Please enter initial number of stones:");
+    numStones = kb.nextInt();
+
+   // Start the game
+   while (numStones > 0)
+  {
+    // Print current game status
+    System.out.println();
+    System.out.print(numStones+" stones left:");
+    for (int i=0; i<numStones; i++)
+    {
+      System.out.print(stoneSym);
+    }
+    System.out.println();
+
+
+    if (player1Turn)
+    {
+      numStones -= player1.removeStone(kb);
+      player1Turn = false;
+    } else
+    {
+      numStones -= player2.removeStone(kb);
+      player1Turn = true;
+    }
+  }
+
+  System.out.println();
+  System.out.println("Game Over");
+  if (player1Turn)
+  {
+    player1.win();
+  } else
+  {
+    player2.win();
+  }
+
+  return;
+  }
+}
+
