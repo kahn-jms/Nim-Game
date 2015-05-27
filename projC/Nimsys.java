@@ -25,6 +25,7 @@ public class Nimsys
   enum Cmds
   {
     ADDPLAYER,
+    ADDAIPLAYER,
     REMOVEPLAYER,
     EDITPLAYER,
     RESETSTATS,
@@ -34,7 +35,9 @@ public class Nimsys
     EXIT,
   }
 
-
+  ////////////////////////////////////////////////////////////////////
+  // Main method
+  ////////////////////////////////////////////////////////////////////
   static public void main(String[] args)
   {
     String inputLine;
@@ -47,8 +50,10 @@ public class Nimsys
         (new FileInputStream("players.dat"));
 
       // Then readObject the player list back in
+      //System.out.println("Reading saved game file.");
       playerList = (NimPlayer[])readGame.readObject();
       unameList = (String[])readGame.readObject();
+      //System.out.println("Read saved game file.");
       readGame.close();
     } catch (IOException noFile)
     {
@@ -96,7 +101,23 @@ public class Nimsys
             //System.out.println("username: " + newNames[0]);
             //System.out.println("famname: " + newNames[1]);
             //System.out.println("firstname: " + newNames[2]);
-            addPlayer(newNames[0],newNames[1],newNames[2]);
+            addPlayer(newNames[0],newNames[1],newNames[2],false);
+          } catch (ArrayIndexOutOfBoundsException noIn)
+          {
+            //System.err.println("Not enough arguments exception: "+noIn.getMessage());
+            System.err.println("Incorrect number of arguments supplied to command.");
+          }
+          break;
+        }
+
+        // Add new AI player to list of players
+        case ADDAIPLAYER:
+        {
+          try
+          {
+            // Split string on commas
+            String[] newNames = inputSplit[1].split(",");
+            addPlayer(newNames[0],newNames[1],newNames[2],true);
           } catch (ArrayIndexOutOfBoundsException noIn)
           {
             //System.err.println("Not enough arguments exception: "+noIn.getMessage());
@@ -268,8 +289,10 @@ public class Nimsys
   }
 
 
+  ////////////////////////////////////////////////////////////////////
   // Method to add new player to the game
-  static void addPlayer(String nickName, String lastName, String firstName)
+  ////////////////////////////////////////////////////////////////////
+  static void addPlayer(String nickName,String lastName,String firstName,boolean isAI)
   {
 
 
@@ -296,7 +319,14 @@ public class Nimsys
       {
         if (playerList[i] == null)
         {
-          playerList[i] = new NimPlayer();
+          if (isAI)
+          {
+          playerList[i] = new NimAIPlayer();
+          } else
+          {
+            playerList[i] = new NimPlayer();
+          }
+
           // Need to set initial values
           playerList[i].setUserName(nickName);
           playerList[i].setFamName(lastName);
@@ -312,7 +342,9 @@ public class Nimsys
 
 
 
-  /* Method to remove players from player list */
+  ////////////////////////////////////////////////////////////////////
+  // Method to remove player from the game
+  ////////////////////////////////////////////////////////////////////
   static void removePlayer(String remPlayer)
   {
 
@@ -341,7 +373,9 @@ public class Nimsys
   }
 
 
-  /* Method to edit player details */
+  ////////////////////////////////////////////////////////////////////
+  // Method to edit player details
+  ////////////////////////////////////////////////////////////////////
   static void editPlayer(String nickName, String lastName, String firstName)
   {
 
@@ -366,7 +400,9 @@ public class Nimsys
   }
 
 
-  /* Method to reset player game stats */
+  ////////////////////////////////////////////////////////////////////
+  // Method to reset player game stats
+  ////////////////////////////////////////////////////////////////////
   static void resetStats(String resetPlayer)
   {
 
@@ -390,7 +426,9 @@ public class Nimsys
   }
 
   
-  /* Method to display player information */
+  ////////////////////////////////////////////////////////////////////
+  // Method to display player information
+  ////////////////////////////////////////////////////////////////////
   static void displayPlayer(String dispPlayer)
   {
 
@@ -414,7 +452,9 @@ public class Nimsys
   }
 
 
-  /* Method to output current rankings */
+  ////////////////////////////////////////////////////////////////////
+  // Method to output current rankings
+  ////////////////////////////////////////////////////////////////////
   static void displayRankings()
   {
     // Scoreboard will be a list of indexes of players in player list
@@ -512,11 +552,16 @@ public class Nimsys
   }
 
 
+  ////////////////////////////////////////////////////////////////////
+  // Method to play a game
+  ////////////////////////////////////////////////////////////////////
   static void playGame(int initStones, int upBound, String player1, String player2)
   {
     
     boolean player1Turn = true;
     NimGame curGame = new NimGame();
+    int curTurn = 0;
+    int maxRem = 0;
 
 
     // Check players exist
@@ -584,7 +629,13 @@ public class Nimsys
         // Note the ! here.
         try
         {
-          player1Turn = !curGame.haveTurn(Integer.parseInt(kb.nextLine()));
+          curTurn = playerList[curGame.getPlayer1()].removeStone
+            (
+             kb,
+             curGame.getStoneCount(),
+             curGame.getUpperBound()
+             );
+          player1Turn = !curGame.haveTurn(curTurn);
         } catch (NumberFormatException badNum)
         {
           System.err.println("Bad int exception: "+badNum.getMessage());
@@ -597,7 +648,13 @@ public class Nimsys
         
         try
         {
-          player1Turn = curGame.haveTurn(Integer.parseInt(kb.nextLine()));
+          curTurn = playerList[curGame.getPlayer2()].removeStone
+            (
+             kb,
+             curGame.getStoneCount(),
+             curGame.getUpperBound()
+             );
+          player1Turn = curGame.haveTurn(curTurn);
         } catch (NumberFormatException badNum)
         {
           System.err.println("Bad int exception: "+badNum.getMessage());

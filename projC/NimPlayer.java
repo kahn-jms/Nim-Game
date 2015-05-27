@@ -104,6 +104,15 @@ public class NimPlayer implements Serializable
   }
 
 
+  // Player returns how many stones to remove
+  public int removeStone(Scanner numRev, int remStones, int maxRem)
+  {
+    return Integer.parseInt(numRev.nextLine());
+  }
+
+
+
+
   // Game winning routine
   public void winGame()
   {
